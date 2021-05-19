@@ -23,11 +23,6 @@ services:
       # - "traefik.http.middlewares.my-rewrite.plugin.plugin-rewrite.lastModified=true"
     # - "traefik.http.middlewares.my-rewrite.plugin.plugin-rewrite.rewrites[0].regex=ID"
     # - "traefik.http.middlewares.my-rewrite.plugin.plugin-rewrite.rewrites[0].replacement=MY-ID"
-    volumes:
-      - type: bind
-        source: /var/run/docker.sock
-        target: /var/run/docker.sock
-        read_only: true
     ports:
       - target: 80
         published: 80
@@ -50,6 +45,8 @@ services:
       - "http://showtimes:4000/api/showtimes/"
       - "-bookingsAPI"
       - "http://bookings:4000/api/bookings/"
+      - "-feedPost-serviceAPI"
+      - "http://feedPost-service:4000/api/contents/"
     labels:
       # Enable public access
       - "traefik.http.routers.website.rule=PathPrefix(`/`)"
@@ -121,11 +118,23 @@ services:
       - "traefik.http.routers.users.rule=PathPrefix(`/api/users/`)"
       - "traefik.http.services.users.loadbalancer.server.port=4000"
 
+  feed-posts:
+   # build: ./feedPost-service
+    image: ghcr.io/mmorejon/cinema-users:v2.1.0
+    command:
+      - "-mongoURI"
+      - "mongodb://db:27017/"
+    #   - "-enableCredentials"
+    #   - "true"
+    # environment:
+    #   MONGODB_USERNAME: "demo"
+    #   MONGODB_PASSWORD: "e3LBVTPdlzxYbxt9"
+    labels:
+      # Enable public access
+      - "traefik.http.routers.contents.rule=PathPrefix(`/api/contents/`)"
+      - "traefik.http.services.contents.loadbalancer.server.port=4000"
+
   db:
     image: mongo:4.2.11
     ports:
-      - "27020:27017"
-    volumes:
-      - type: bind
-        source: ./backup
-        target: /backup
+      - "27019:27017"
