@@ -11,15 +11,15 @@ import (
 )
 
 // UserModel represent a mgo database session with a user model data.
-type UserModel struct {
+type RegistredUserModel struct {
 	C *mongo.Collection
 }
 
 // All method will be used to get all records from the users table.
-func (m *UserModel) GetAll() ([]models.User, error) {
+func (m *RegistredUserModel) GetAll() ([]models.RegisteredUser, error) {
 	// Define variables
 	ctx := context.TODO()
-	uu := []models.User{}
+	uu := []models.RegisteredUser{}
 
 	// Find all users
 	userCursor, err := m.C.Find(ctx, bson.M{})
@@ -35,14 +35,14 @@ func (m *UserModel) GetAll() ([]models.User, error) {
 }
 
 // FindByID will be used to find a new user registry by id
-func (m *UserModel) FindByID(id string) (*models.User, error) {
+func (m *RegistredUserModel) FindByID(id string) (*models.RegisteredUser, error) {
 	p, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
 
 	// Find user by id
-	var user = models.User{}
+	var user = models.RegisteredUser{}
 	err = m.C.FindOne(context.TODO(), bson.M{"_id": p}).Decode(&user)
 	if err != nil {
 		// Checks if the user was not found
@@ -56,12 +56,12 @@ func (m *UserModel) FindByID(id string) (*models.User, error) {
 }
 
 // Insert will be used to insert a new user
-func (m *UserModel) Insert(user models.User) (*mongo.InsertOneResult, error) {
+func (m *RegistredUserModel) Insert(user models.RegisteredUser) (*mongo.InsertOneResult, error) {
 	return m.C.InsertOne(context.TODO(), user)
 }
 
 // Delete will be used to delete a user
-func (m *UserModel) Delete(id string) (*mongo.DeleteResult, error) {
+func (m *RegistredUserModel) Delete(id string) (*mongo.DeleteResult, error) {
 	p, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err

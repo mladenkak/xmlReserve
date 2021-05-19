@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"gomod/pkg/models"
 	"log"
 	"net/http"
 	"os"
@@ -18,23 +17,16 @@ import (
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
-	users    *mongodb.UserModel
-	roles    *mongodb.RoleModel
-	reports  *mongodb.ReportModel
-	verifications *mongodb.VerificationModel
-	registredUsers *mongodb.RegistredUserModel
-	agents *mongodb.AgentModel
+	partnerships *mongodb.PartnershipModel
 }
 
 func main() {
-
-	fmt.Printf("Found multiple documents (array of pointers): %+v\n")
 
 	// Define command-line flags
 	serverAddr := flag.String("serverAddr", "", "HTTP server network address")
 	serverPort := flag.Int("serverPort", 4000, "HTTP server network port")
 	mongoURI := flag.String("mongoURI", "mongodb://localhost:27017", "Database hostname url")
-	mongoDatabse := flag.String("mongoDatabse", "users", "Database name")
+	mongoDatabse := flag.String("mongoDatabse", "bookings", "Database name")
 	enableCredentials := flag.Bool("enableCredentials", false, "Enable the use of credentials for mongo connection")
 	flag.Parse()
 
@@ -50,7 +42,6 @@ func main() {
 			Password: os.Getenv("MONGODB_PASSWORD"),
 		}
 	}
-
 
 	// Establish database connection
 	client, err := mongo.NewClient(co)
@@ -77,20 +68,8 @@ func main() {
 	app := &application{
 		infoLog:  infoLog,
 		errorLog: errLog,
-		users: &mongodb.UserModel{
-			C: client.Database(*mongoDatabse).Collection("users"),
-		},
-		roles: &mongodb.RoleModel{
-			C: client.Database(*mongoDatabse).Collection("roles"),
-		},
-		verifications: &mongodb.VerificationModel{
-			C: client.Database(*mongoDatabse).Collection("verifications"),
-		},
-		reports: &mongodb.ReportModel{
-			C: client.Database(*mongoDatabse).Collection("reports"),
-		},
-		registredUsers: &mongodb.RegistredUserModel{
-			C: client.Database(*mongoDatabse).Collection("registredUsers"),
+		partnerships: &mongodb.PartnershipModel{
+			C: client.Database(*mongoDatabse).Collection("partnerships"),
 		},
 	}
 
@@ -108,28 +87,4 @@ func main() {
 	infoLog.Printf("Starting server on %s", serverURI)
 	err = srv.ListenAndServe()
 	errLog.Fatal(err)
-
-	collection := client.Database("test").Collection("roles")
-
-	// Some dummy data to add to the Database
-	admin := models.Role{"1", "ADMIN"}
-	user := models.Role{"2", "USER"}
-
-	// Insert a single document
-	insertResult, err := collection.InsertOne(context.TODO(), admin)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
-
-	// Insert multiple documents
-	trainers := []interface{}{admin, user}
-
-	insertManyResult, err := collection.InsertMany(context.TODO(), trainers)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs)
-
-
 }

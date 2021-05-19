@@ -3,42 +3,39 @@ package mongodb
 import (
 	"context"
 	"errors"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gomod/pkg/models"
 )
-
-// UserModel represent a mgo database session with a user model data.
-type RoleModel struct {
+type ReportModel struct {
 	C *mongo.Collection
 }
 
-func (m *RoleModel) GetAll() ([]models.Role, error) {
+func (m *ReportModel) GetAll() ([]models.Report, error) {
 	ctx := context.TODO()
-	uu := []models.Role{}
+	mm := []models.Report{}
 
-	roleCursor, err := m.C.Find(ctx, bson.M{})
+	reportCursor, err := m.C.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	err = roleCursor.All(ctx, &uu)
+	err = reportCursor.All(ctx, &mm)
 	if err != nil {
 		return nil, err
 	}
 
-	return uu, err
+	return mm, err
 }
 
-func (m *RoleModel) FindByID(id string) (*models.Role, error) {
+func (m *ReportModel) FindByID(id string) (*models.Report, error) {
 	p, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
 
-	var role = models.Role{}
-	err = m.C.FindOne(context.TODO(), bson.M{"_id": p}).Decode(&role)
+	var report = models.Report{}
+	err = m.C.FindOne(context.TODO(), bson.M{"_id": p}).Decode(&report)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("ErrNoDocuments")
@@ -46,14 +43,14 @@ func (m *RoleModel) FindByID(id string) (*models.Role, error) {
 		return nil, err
 	}
 
-	return &role, nil
+	return &report, nil
 }
 
-func (m *RoleModel) Insert(role models.Role) (*mongo.InsertOneResult, error) {
-	return m.C.InsertOne(context.TODO(), role)
+func (m *ReportModel) Insert(report models.Report) (*mongo.InsertOneResult, error) {
+	return m.C.InsertOne(context.TODO(), report)
 }
 
-func (m *RoleModel) Delete(id string) (*mongo.DeleteResult, error) {
+func (m *ReportModel) Delete(id string) (*mongo.DeleteResult, error) {
 	p, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err

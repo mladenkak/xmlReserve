@@ -11,19 +11,19 @@ import (
 )
 
 // UserModel represent a mgo database session with a user model data.
-type RoleModel struct {
+type AgentModel struct {
 	C *mongo.Collection
 }
 
-func (m *RoleModel) GetAll() ([]models.Role, error) {
+func (m *AgentModel) GetAll() ([]models.Agent, error) {
 	ctx := context.TODO()
-	uu := []models.Role{}
+	uu := []models.Agent{}
 
-	roleCursor, err := m.C.Find(ctx, bson.M{})
+	agentCursor, err := m.C.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	err = roleCursor.All(ctx, &uu)
+	err = agentCursor.All(ctx, &uu)
 	if err != nil {
 		return nil, err
 	}
@@ -31,14 +31,14 @@ func (m *RoleModel) GetAll() ([]models.Role, error) {
 	return uu, err
 }
 
-func (m *RoleModel) FindByID(id string) (*models.Role, error) {
+func (m *AgentModel) FindByID(id string) (*models.Agent, error) {
 	p, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
 
-	var role = models.Role{}
-	err = m.C.FindOne(context.TODO(), bson.M{"_id": p}).Decode(&role)
+	var agent = models.Agent{}
+	err = m.C.FindOne(context.TODO(), bson.M{"_id": p}).Decode(&agent)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("ErrNoDocuments")
@@ -46,14 +46,14 @@ func (m *RoleModel) FindByID(id string) (*models.Role, error) {
 		return nil, err
 	}
 
-	return &role, nil
+	return &agent, nil
 }
 
-func (m *RoleModel) Insert(role models.Role) (*mongo.InsertOneResult, error) {
-	return m.C.InsertOne(context.TODO(), role)
+func (m *AgentModel) Insert(agent models.Agent) (*mongo.InsertOneResult, error) {
+	return m.C.InsertOne(context.TODO(), agent)
 }
 
-func (m *RoleModel) Delete(id string) (*mongo.DeleteResult, error) {
+func (m *AgentModel) Delete(id string) (*mongo.DeleteResult, error) {
 	p, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err

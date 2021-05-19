@@ -1,22 +1,18 @@
 package models
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 	"time"
 )
 //ENUMS
 type Gender int
 const (
-
 	MALE Gender = iota
 	FEMALE
 )
 
 type Category int
-
 const (
-
 	INFLUENCER Category = iota
 	SPORTS
 	NEW_MEDIA
@@ -27,7 +23,7 @@ const (
 
 // User is used to represent user profile data
 type User struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	ID       uuid.UUID `bson:"_id,omitempty"`
 	Name     string             `bson:"name,omitempty"`
 	LastName string             `bson:"lastname,omitempty"`
 	Email string `validate:"required,email" bson:"email,omitempty"`
@@ -61,7 +57,6 @@ type Agent struct {
 	User User `bson:"user,omitempty"`
 	Website string `bson:"website,omitempty"`
 	Approved bool `bson:"approved,omitempty"`
-
 }
 
 type RegisteredUser struct {
@@ -73,7 +68,7 @@ type RegisteredUser struct {
 	Category Category `bson:"category,omitempty"`
 	Followers []User `bson:"followers,omitempty"`
 	Following []User `bson:"following,omitempty"`
-	FavoritePosts []uuid.UUID `bson:"favoritePosts,omitempty"`                                 //post
+	FavoritePosts []uuid.UUID `bson:"favoritePosts,omitempty"`
 	Collections []uuid.UUID `bson:"collections,omitempty"`
 	Posts []uuid.UUID `bson:"posts,omitempty"`
 	Stories []uuid.UUID `bson:"stories,omitempty"`
@@ -81,7 +76,7 @@ type RegisteredUser struct {
 	Highlights []uuid.UUID `bson:"highlights,omitempty"`
 	Muted []uuid.UUID `bson:"muted,omitempty"`
 	Blocked []uuid.UUID `bson:"blocked,omitempty"`
-	NotificationSettings uuid.UUID `bson:"notificationSettings,omitempty"`           //?????????????????????????????????
+	NotificationSettings uuid.UUID `bson:"notificationSettings,omitempty"`
 	LikedPosts []uuid.UUID `bson:"likedPosts,omitempty"`
 	Disliked []uuid.UUID `bson:"disliked,omitempty"`
 }
